@@ -1,54 +1,46 @@
-(function (document) {
-  'use strict';
+const activescreen = document.querySelector(".activescreen")
+const inactivescreen = document.querySelector(".inactivescreen")
+const buttons = document.querySelectorAll(".button")
+const digits = []
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const in1 = document.querySelector("#number1");
-    const in2 = document.querySelector("#number2");
-    const out = document.querySelector("output");
+function update() {
+  activescreen.innerText = digits.join('') || 0
+  inactivescreen.innerText = eval(digits.join('')) || 0
+}
 
-    const buttons = document.querySelectorAll('button');
+function toNormal() {
+  activescreen.classList.add('activescreen')
+  activescreen.classList.remove('inactivescreen')
+  inactivescreen.classList.remove('activescreen')
+  inactivescreen.classList.add('inactivescreen')
+}
 
-    for (let button of buttons) {
-      button.addEventListener('click', function () {
-        let nr1 = Number(in1.value);
-        let nr2 = Number(in2.value);
-        let op  = this.getAttribute('id');
-        out.innerText = calculate(nr1, nr2, op);
-      });
-    }
+function showresult() {
+  activescreen.classList.remove('activescreen')
+  activescreen.classList.add('inactivescreen')
+  inactivescreen.classList.add('activescreen')
+  inactivescreen.classList.remove('inactivescreen')
+  digits[0] = eval(digits.join('')) || ''
+  digits.length = 1
+}
 
-    function calculate(a, b, operation) {
-      let result = null;
-      switch (operation) {
-        case 'add':
-          result = `Add: ${a + b}`;
-          break;
-        case 'subtract':
-          result = `Subtract: ${a - b}`;
-          break;
-        case 'multiply':
-          result = `Multiply: ${a * b}`;
-          break;
-        case 'divide':
-          if (b == 0) {
-            result = 'Divison by 0 is not allowed!';
-          } else {
-            result = `Divide: ${a / b}`;
-          }
-          break;
-        case 'modulo':
-          if (b == 0) {
-            result = 'Modulo by 0 is not allowed!';
-          } else {
-            result = `Modulo: ${a % b}`;
-          }
-          break;
-        case 'clear':
-          in1.value = in2.value = '';
-          // result = `cleared!`;
-      }
-      return result;
-    }
+function clearresult() {
+  digits.length = 0
+  activescreen.innerText = 0
+  inactivescreen.innerText = 0
+}
+
+function removeDigits() {
+  digits.pop()
+  update()
+}
+buttons.forEach(button => {
+  button.addEventListener("click", (e) => {
+    if (activescreen.classList.contains("inactivescreen")) toNormal()
+    if (e.target.innerText == "=") return showresult()
+    if (e.target.innerText == "del") return removeDigits()
+    if (e.target.innerText == "C") return clearresult()
+    digits.push(e.target.innerText)
+    update()
   })
-
-}(document));
+})
